@@ -6,6 +6,7 @@ defaults:
 image_path: ./generated_test_image.tif
 tile_size: 1024
 batch_size: 4
+image_size: 10000
 
 # DDP settings
 gpus: 1

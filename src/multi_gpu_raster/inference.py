@@ -10,7 +10,7 @@ from lightning.pytorch.loggers import CSVLogger
 from torch.utils.data import DataLoader
 
 from .dataset import TiledGeoTIFFDataset
-from .model import ResNet50Prediction
+from .model import ObjectDetector
 from .util import generate_test_image
 
 logging.basicConfig(level=logging.INFO)
@@ -42,13 +42,13 @@ def main(cfg: DictConfig):
 
     # Generate a test image if it doesn't exist
     if not os.path.exists(cfg.image_path):
-        generate_test_image(cfg.image_path)
+        generate_test_image(cfg.image_path, cfg.image_size)
 
     # Data loading
     dm = TiledDataModule(cfg)
 
     # Model and trainer setup
-    model = ResNet50Prediction()
+    model = ObjectDetector()
     trainer = pl.Trainer(
         devices=cfg.gpus if cfg.accelerator not in ['cpu', 'mps'] else 1,
         accelerator=cfg.accelerator,

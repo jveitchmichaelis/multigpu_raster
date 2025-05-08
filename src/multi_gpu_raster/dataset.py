@@ -15,7 +15,7 @@ class TiledGeoTIFFDataset(Dataset):
         with rasterio.open(image_path) as src:
             self.width, self.height = src.width, src.height
             tiler = Tiler(
-                self.width, self.height, tile_size=self.tile_size, min_overlap=256
+                self.width, self.height, tile_size=self.tile_size, min_overlap=0
             )
             self.tiles = list(tiler.tiles)
 

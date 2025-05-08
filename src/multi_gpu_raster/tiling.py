@@ -85,7 +85,7 @@ class Tiler:
         self.stride = tile_size - min_overlap
         self.align_edges = align_edges
 
-        if self.overlap > tile_size:
+        if self.overlap >= tile_size:
             raise ValueError("Overlap must be less than tile size.")
 
         if (self.width - tile_size) <= 0 and (self.height - tile_size) <= 0:
