@@ -8,9 +8,10 @@ tile_size: 1024
 batch_size: 4
 
 # DDP settings
-gpus: 2
+gpus: 1
+accelerator: gpu
 workers: 4
-precision: 16  # mixed precision for speed
+precision: 16-mixed
 
 # Logging and profiling
 log_interval: 10

@@ -3,11 +3,10 @@ import os
 import time
 
 import hydra
-import pytorch_lightning as pl
-import rasterio
-import torch
+import lightning.pytorch as pl
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning.strategies import DDPStrategy
+from lightning.pytorch.strategies import DDPStrategy
+from lightning.pytorch.loggers import CSVLogger
 from torch.utils.data import DataLoader
 
 from .dataset import TiledGeoTIFFDataset
@@ -37,7 +36,7 @@ class TiledDataModule(pl.LightningDataModule):
         )
 
 
-@hydra.main(config_path="conf", config_name="config")
+@hydra.main(config_path="conf", config_name="config", version_base=None)
 def main(cfg: DictConfig):
     logging.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
 
@@ -51,12 +50,13 @@ def main(cfg: DictConfig):
     # Model and trainer setup
     model = ResNet50Prediction()
     trainer = pl.Trainer(
-        devices=cfg.gpus,
-        accelerator="gpu",
-        strategy=DDPStrategy(find_unused_parameters=False),
-        precision=cfg.precision,
+        devices=cfg.gpus if cfg.accelerator not in ['cpu', 'mps'] else 1,
+        accelerator=cfg.accelerator,
+        strategy=DDPStrategy(find_unused_parameters=False) if cfg.accelerator not in ['cpu', 'mps'] else 'auto',
+        precision=cfg.precision if cfg.accelerator != 'cpu' else 'bf16-mixed',
         profiler=cfg.profiler,
         log_every_n_steps=cfg.log_interval,
+        logger=CSVLogger("logs")
     )
 
     start_time = time.time()

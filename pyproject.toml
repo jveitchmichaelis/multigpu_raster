@@ -30,7 +30,7 @@ addopts = [
 ]
 
 [project.scripts]
-mgpr = "multi_gpu_raster:main"
+mgpr = "multi_gpu_raster.inference:main"
 
 [build-system]
 requires = ["hatchling"]
