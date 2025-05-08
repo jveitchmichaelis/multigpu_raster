@@ -6,7 +6,6 @@
 #SBATCH --nodes=1
 #SBATCH --partition=gpu
 #SBATCH --gpus=${NUM_GPUS}
-#SBATCH --ntasks-per-node=${NUM_GPUS}
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=16GB
 #SBATCH --time=00:10:00       #Time limit hrs:min:sec
@@ -22,4 +21,4 @@ module purge
 source .venv/bin/activate
 
 export LINE_PROFILE=1
-srun mgpr gpus=${NUM_GPUS}
+srun mgpr gpus=$SLURM_NTASKS_PER_NODE
