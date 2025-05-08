@@ -1,8 +1,10 @@
 import logging
 import math
 from typing import Generator, List, Tuple
+
 import numpy as np
 import numpy.typing as npt
+from shapely.geometry import box
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +129,7 @@ class Tiler:
 
             if self.centered:
                 overlap = (edges[-1] + tile_size) - extent
-                edges = [e - overlap//2 for e in edges]
+                edges = [e - overlap // 2 for e in edges]
 
         return edges
 
