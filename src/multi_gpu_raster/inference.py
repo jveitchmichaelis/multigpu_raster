@@ -40,13 +40,6 @@ class TiledDataModule(pl.LightningDataModule):
 def main(cfg: DictConfig):
     logging.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
 
-    # Generate a test image if it doesn't exist
-    if not os.path.exists(cfg.image_path):
-        generate_test_image(cfg.image_path, cfg.image_size)
-
-    # Data loading
-    dm = TiledDataModule(cfg)
-
     # Model and trainer setup
     model = ObjectDetector()
     trainer = pl.Trainer(
@@ -58,6 +51,13 @@ def main(cfg: DictConfig):
         log_every_n_steps=cfg.log_interval,
         logger=CSVLogger("logs")
     )
+
+    # Generate a test image if it doesn't exist and we're on rank 0
+    if trainer.global_rank == 0 and not os.path.exists(cfg.image_path):
+        generate_test_image(cfg.image_path, cfg.image_size)
+
+    # Data loading
+    dm = TiledDataModule(cfg)
 
     start_time = time.time()
     trainer.predict(model, datamodule=dm)
