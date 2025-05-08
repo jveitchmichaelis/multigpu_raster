@@ -37,6 +37,10 @@ class TiledDataModule(pl.LightningDataModule):
 
 
 @hydra.main(config_path="conf", config_name="config", version_base=None)
+def test_image(cfg: DictConfig):
+    generate_test_image(cfg.image_path, cfg.image_size)
+
+@hydra.main(config_path="conf", config_name="config", version_base=None)
 def main(cfg: DictConfig):
     logging.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
 
@@ -52,18 +56,12 @@ def main(cfg: DictConfig):
         logger=CSVLogger("logs")
     )
 
-    # Generate a test image if it doesn't exist and we're on rank 0
-    if trainer.global_rank == 0 and not os.path.exists(cfg.image_path):
-        generate_test_image(cfg.image_path, cfg.image_size)
-
     # Data loading
     dm = TiledDataModule(cfg)
 
     start_time = time.time()
     trainer.predict(model, datamodule=dm)
     end_time = time.time()
-
-    os.remove(cfg.image_path)
 
     logging.info(f"Prediction completed in {end_time - start_time:.2f} seconds")
 
