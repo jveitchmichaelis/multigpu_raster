@@ -1,16 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=MultiGPURasterInference
-#SBATCH --mail-type=END
-#SBATCH --mail-user=${SLURM_USER}
-#SBATCH --account=${SLURM_ACCOUNT}
 #SBATCH --nodes=1
 #SBATCH --partition=gpu
 #SBATCH --gpus=${NUM_GPUS}
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=16GB
 #SBATCH --time=00:10:00       #Time limit hrs:min:sec
-#SBATCH --output=/home/${SLURM_USER}/logs/tiff_tile/%j.out
-#SBATCH --error=/home/${SLURM_USER}/logs/tiff_tile/%j.err
+#SBATCH --output=./slurm_logs/%j.out
+#SBATCH --error=./slurm_logs/%j.err
 
 # Print the slurm environment variables sorted by name
 printenv | grep -i slurm | sort
