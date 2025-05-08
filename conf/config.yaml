@@ -1,0 +1,18 @@
+# config.yaml
+defaults:
+  - _self_
+
+# General settings
+image_path: ./generated_test_image.tif
+tile_size: 1024
+batch_size: 4
+
+# DDP settings
+gpus: 2
+workers: 4
+precision: 16  # mixed precision for speed
+
+# Logging and profiling
+log_interval: 10
+profiler: simple
+
