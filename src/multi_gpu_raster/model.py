@@ -15,7 +15,7 @@ class LoggingModule(pl.LightningModule):
             "utilization": [],
         }
 
-    def on_predict_batch_end(self, outputs, batch, batch_idx, dataloader_idx=0):
+    def sample_memory(self):
         if torch.cuda.is_available():
             device = torch.cuda.current_device()
             memory_allocated = torch.cuda.memory_allocated(device)
@@ -90,7 +90,9 @@ class ResNet50Prediction(LoggingModule):
         self.model.eval()
 
     def forward(self, x):
-        return self.model(x)
+        res = self.model(x)
+        self.sample_memory()
+        return res
 
 
 class ObjectDetector(LoggingModule):
@@ -100,4 +102,6 @@ class ObjectDetector(LoggingModule):
         self.model.eval()
 
     def forward(self, x):
-        return self.model(x)
+        res = self.model(x)
+        self.sample_memory()
+        return res
