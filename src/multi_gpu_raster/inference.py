@@ -51,6 +51,7 @@ def test_image(cfg: DictConfig):
 
 @hydra.main(config_path="conf", config_name="config", version_base=None)
 def main(cfg: DictConfig):
+
     logging.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
 
     # Model and trainer setup
