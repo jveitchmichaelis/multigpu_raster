@@ -81,12 +81,6 @@ class ObjectDetector(LoggingModule):
         super().__init__()
         self.model = models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
         self.model.eval()
-        self.gpu_stats = {
-            "max_memory": 0,
-            "memory_per_batch": [],
-            "avg_memory": 0,
-            "iterations": 0,
-        }
 
     def forward(self, x):
         return self.model(x)
