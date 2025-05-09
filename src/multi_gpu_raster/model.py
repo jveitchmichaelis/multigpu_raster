@@ -37,7 +37,7 @@ class LoggingModule(pl.LightningModule):
     def on_predict_end(self):
 
         if torch.cuda.is_available():
-            device = self.torch.cuda.current_device()
+            device = torch.cuda.current_device()
             stats = self.gpu_stats[device]
 
             avg_memory = stats["total_memory"] / stats["iterations"]
