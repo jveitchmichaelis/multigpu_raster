@@ -1,6 +1,6 @@
 # Multi-GPU Raster Inference Demo
 
-This repository contains a fairly simple proof of concept for multi-GPU inference over a dataloader. You can use it as-is to confirm that your environment is set up correctly, and it can be modified for use with different dataloaders and/or models.
+This repository contains a fairly simple proof of concept for multi-GPU inference over a PyTorch dataloader. Most of the complexity is in ensuring that your environment is set up correctly, which this codebase can be used to check. It can be modified for use with different dataloaders and/or models.
 
 A basic dataloader is provided to load tiles from a given raster (typically an orthomosaic'd GeoTiff), or you can generate dummy data for testing with a simulated delay. This enables you to easily see speedups from using multi-GPU machines, which should typically provide a close-to linear speedup in throughput.
 
@@ -8,7 +8,7 @@ All distributed logic is handled by PyTorch Lightning and CLI configuration is v
 
 ## Setup
 
-Dependencies are specified in `pyproject.toml` and we recommend using `uv` for installation. Rasterio depends on `gdal` which is a pain to install on most systems, however you can see how far you by running `uv sync`. This should install two scripts in your path: `mgpr` and `mgpr-test-image`.
+Dependencies are specified in `pyproject.toml` and we recommend using `uv` for installation. Rasterio depends on `gdal` which is a pain to install on most systems, however you can see how far you by running `uv sync`. This should install two scripts in your path: `mgpr` (Multi-GPu-Raster) and `mgpr-test-image`.
 
 ## Usage
 
