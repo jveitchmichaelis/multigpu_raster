@@ -2,7 +2,7 @@ import rasterio
 import torch
 from rasterio.windows import Window
 from torch.utils.data import Dataset
-from torchvision.transforms import ToTensor
+import time
 
 from .tiling import Tiler
 
@@ -30,3 +30,19 @@ class TiledGeoTIFFDataset(Dataset):
             data = src.read(window=window, boundless=True)
             data = torch.tensor(data, dtype=torch.float32) / 255.0
             return data
+        
+
+class DummyImageDataset(Dataset):
+    def __init__(self, delay=0.01, width=1024, height=1024, count=10000):
+        self.delay = delay
+        self.width = width
+        self.height = height
+        self.count = count
+
+    def __len__(self):
+        return self.count
+    
+    def __getitem__(self, idx):
+        time.sleep(self.delay)
+        return torch.rand(3, self.width, self.height).float()
+    

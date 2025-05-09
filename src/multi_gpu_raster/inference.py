@@ -9,7 +9,7 @@ from lightning.pytorch.strategies import DDPStrategy
 from lightning.pytorch.loggers import CSVLogger
 from torch.utils.data import DataLoader
 
-from .dataset import TiledGeoTIFFDataset
+from .dataset import TiledGeoTIFFDataset, DummyImageDataset
 from .model import ObjectDetector
 from .util import generate_test_image
 
@@ -18,14 +18,23 @@ logging.basicConfig(level=logging.INFO)
 
 # DataModule for Lightning
 class TiledDataModule(pl.LightningDataModule):
-    def __init__(self, config):
+    def __init__(self, config, fake_data=True):
         super().__init__()
         self.config = config
+        self.fake_data
 
     def setup(self, stage=None):
-        self.dataset = TiledGeoTIFFDataset(
-            self.config.image_path, self.config.tile_size
-        )
+        if self.fake_data:
+            self.dataset = DummyImageDataset(
+                self.config.dummy_dataset_delay,
+                self.config.tile_size,
+                self.config.tile_size,
+                count=self.config.dummy_dataset_count,
+            )
+        else:
+            self.dataset = TiledGeoTIFFDataset(
+                self.config.image_path, self.config.tile_size
+            )
 
     def predict_dataloader(self):
         return DataLoader(
