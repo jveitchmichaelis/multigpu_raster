@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 
 import hydra
@@ -56,6 +55,7 @@ def main(cfg: DictConfig):
 
     # Model and trainer setup
     model = ObjectDetector()
+
     trainer = pl.Trainer(
         devices=cfg.gpus if cfg.accelerator not in ["cpu", "mps"] else 1,
         accelerator=cfg.accelerator,
