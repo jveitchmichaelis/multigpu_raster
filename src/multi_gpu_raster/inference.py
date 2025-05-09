@@ -79,6 +79,8 @@ def main(cfg: DictConfig):
 
     logging.info(f"Prediction completed in {end_time - start_time:.2f} seconds")
 
+    logging.info(model.gpu_stats)
+
 
 if __name__ == "__main__":
     main()
