@@ -52,7 +52,7 @@ class LoggingModule(pl.LightningModule):
             avg_memory_percent = (avg_memory / total_memory) * 100
             max_memory_percent = (stats["max_memory"] / total_memory) * 100
 
-            print(f"GPU {device}:")
+            print(f"GPU {device} / {len(torch.cuda.device_count())}:")
             print(
                 f"  Average Memory Usage per Batch: {avg_memory_gb:.2f} GB ({avg_memory_percent:.2f}%)"
             )
