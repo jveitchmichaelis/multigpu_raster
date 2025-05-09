@@ -12,7 +12,10 @@ class LoggingModule(pl.LightningModule):
         if torch.cuda.is_available():
             # Initialize the GPU stats dictionary if not already done
             if not hasattr(self, "gpu_stats"):
-                self.gpu_stats = {}
+                self.gpu_stats = {
+                    device: {"max_memory": 0, "total_memory": 0, "iterations": 0}
+                    for device in range(torch.cuda.device_count())
+                }
 
             device = torch.cuda.current_device()
             memory_allocated = torch.cuda.memory_allocated(device)
