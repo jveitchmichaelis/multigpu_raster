@@ -21,7 +21,7 @@ class TiledDataModule(pl.LightningDataModule):
     def __init__(self, config, fake_data=True):
         super().__init__()
         self.config = config
-        self.fake_data
+        self.fake_data = fake_data
 
     def setup(self, stage=None):
         if self.fake_data:
