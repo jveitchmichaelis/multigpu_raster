@@ -1,7 +1,10 @@
-import torch
 import time
+
+import torch
 from fixtures import TEST_IMAGE_PATH, TILE_SIZE, setup_image
-from multi_gpu_raster.dataset import TiledGeoTIFFDataset, DummyImageDataset
+
+from multi_gpu_raster.dataset import DummyImageDataset, TiledGeoTIFFDataset
+
 
 def test_image_dataset_loading(setup_image):
     dataset = TiledGeoTIFFDataset(TEST_IMAGE_PATH, TILE_SIZE)

@@ -1,11 +1,14 @@
-import pytest
-from multi_gpu_raster.util import generate_test_image
 import os
+
+import pytest
+
+from multi_gpu_raster.util import generate_test_image
 
 TEST_IMAGE_PATH = "./test_image.tif"
 TILE_SIZE = 1024
 BATCH_SIZE = 2
-TEST_IMAGE_SIZE=4096
+TEST_IMAGE_SIZE = 4096
+
 
 @pytest.fixture(scope="session")
 def setup_image():

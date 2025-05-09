@@ -1,7 +1,8 @@
+import logging
+
 import numpy as np
 import rasterio
 from rasterio.windows import Window
-import logging
 
 
 def generate_test_image(file_path, size=20000, tile_size=1024):
@@ -17,7 +18,7 @@ def generate_test_image(file_path, size=20000, tile_size=1024):
         "tiled": True,
         "blockxsize": tile_size,
         "blockysize": tile_size,
-        "bigtiff": "IF_NEEDED"
+        "bigtiff": "IF_NEEDED",
     }
 
     with rasterio.open(file_path, "w", **profile) as dst:
@@ -28,9 +29,7 @@ def generate_test_image(file_path, size=20000, tile_size=1024):
                     width = min(tile_size, size - x)
                     height = min(tile_size, size - y)
 
-                    data = np.random.randint(
-                        0, 256, (height, width), dtype=np.uint8
-                    )
+                    data = np.random.randint(0, 256, (height, width), dtype=np.uint8)
 
                     window = Window(x, y, width, height)
                     dst.write(data, band, window=window)

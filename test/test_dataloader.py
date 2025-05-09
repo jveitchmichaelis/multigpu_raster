@@ -1,7 +1,9 @@
 # test_script.py
+from fixtures import BATCH_SIZE, TEST_IMAGE_PATH, TILE_SIZE, setup_image
 from torch.utils.data import DataLoader
-from fixtures import TEST_IMAGE_PATH, TILE_SIZE, BATCH_SIZE, setup_image
+
 from multi_gpu_raster.inference import TiledGeoTIFFDataset
+
 
 def test_dataloader(setup_image):
     dataset = TiledGeoTIFFDataset(TEST_IMAGE_PATH, TILE_SIZE)
