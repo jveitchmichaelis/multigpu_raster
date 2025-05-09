@@ -72,3 +72,59 @@ To launch a job on your own cluster, run:
 ```
 export NUM_GPUS=2; sbatch --ntasks-per-node=$NUM_GPUS --gpus=$NUM_GPUS job.slurm
 ```
+
+If your cluster supports it, try to constrain which GPU will run e.g. `--gpus=a100:$NUM_GPUS` to give more consistent results. For example, on some clusters (including HiPerGator) you will get different GPUs for single vs multi machines.
+
+The script will log to a `slurm_logs` folder, by job ID. To check while running:
+
+```
+tail -f slurm_logs/<job id>.out
+```
+
+You should find that on a good GPU, runtime will be fast - under 5 minutes. If you find the process is timing out, check that there hasn't been an error somewhere.
+
+Modify Hydra parameters in the job file!
+
+## Models
+
+Two models are included - a ResNet50 and FasterRCNN. They are configured with default pretrained weights, but are purely for testing purposes. You can have a look at the `models.py` file to add your own, or to load in your own weights if you need better timing estimates. The only thing that's non-standard is a subclass of LightningModule that will periodically profile GPU memory usage during prediction.
+
+## Verification
+
+With everything set up, note here we're requesting fixed GPU types for comparison:
+
+```
+export NUM_GPUS=1; sbatch --ntasks-per-node=$NUM_GPUS --gpus=a100:$NUM_GPUS job.slurm
+export NUM_GPUS=2; sbatch --ntasks-per-node=$NUM_GPUS --gpus=a100:$NUM_GPUS job.slurm
+```
+
+And the results should look something like (note the very small utilisation here as the batch size is tiny)
+
+```
+# Single A100
+Predicting DataLoader 0: 100%|██████████| 417/417 [01:38<00:00,  4.23it/s]
+GPU Usage Summary:
+GPU 0:
+  Average Memory Usage per Batch: 0.53 GB (0.67%)
+  Peak Memory Usage: 6.66 GB (8.42%)
+  Average Utilization per Batch: 0.67%
+[2025-05-09 18:50:53,428][root][INFO] - Prediction completed in 101.64 seconds
+```
+
+```
+# Dual A100
+Predicting DataLoader 0: 100%|██████████| 209/209 [00:50<00:00,  4.16it/s]
+GPU Usage Summary:
+GPU 0:
+  Average Memory Usage per Batch: 0.53 GB (0.67%)
+  Peak Memory Usage: 6.66 GB (8.42%)
+  Average Utilization per Batch: 0.67%
+GPU 1:
+  Average Memory Usage per Batch: 0.53 GB (0.67%)
+  Peak Memory Usage: 6.66 GB (8.42%)
+  Average Utilization per Batch: 0.67%
+[2025-05-09 18:50:11,379][root][INFO] - Prediction completed in 54.90 seconds
+[2025-05-09 18:50:11,413][root][INFO] - Prediction completed in 55.10 seconds
+```
+
+ Logging here is printing for all ranks (i.e. 2 GPUs). You can then experiment with numbers of CPUs, workers etc. You will find that the more powerful a system you specify, the longer it will take for the job to be queued. Also be careful to allow 2xCPUs for a given number of workers as these will be spawned per rank.

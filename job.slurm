@@ -2,8 +2,8 @@
 #SBATCH --job-name=MultiGPURasterInference
 #SBATCH --nodes=1
 #SBATCH --partition=gpu
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=32GB
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64GB
 #SBATCH --time=00:10:00       #Time limit hrs:min:sec
 #SBATCH --output=./slurm_logs/%j.out
 #SBATCH --error=./slurm_logs/%j.err

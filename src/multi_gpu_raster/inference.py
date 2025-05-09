@@ -3,6 +3,7 @@ import time
 
 import hydra
 import lightning.pytorch as pl
+import torch
 from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.strategies import DDPStrategy
 from omegaconf import DictConfig, OmegaConf
@@ -53,6 +54,10 @@ def test_image(cfg: DictConfig):
 def main(cfg: DictConfig):
 
     logging.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
+
+    device = torch.cuda.current_device()
+    _, total = torch.cuda.mem_get_info(device)
+    logging.info(f"Total available VRAM: {total/1e9:.2f} GB")
 
     # Model and trainer setup
     model = FasterRCNN()
