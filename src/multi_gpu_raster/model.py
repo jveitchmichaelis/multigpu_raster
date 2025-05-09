@@ -83,7 +83,7 @@ class LoggingModule(pl.LightningModule):
 
 
 # PyTorch Lightning model
-class ResNet50Prediction(LoggingModule):
+class ResNet50(LoggingModule):
     def __init__(self):
         super().__init__()
         self.model = models.resnet50(weights="DEFAULT")
@@ -95,7 +95,7 @@ class ResNet50Prediction(LoggingModule):
         return res
 
 
-class ObjectDetector(LoggingModule):
+class FasterRCNN(LoggingModule):
     def __init__(self):
         super().__init__()
         self.model = models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")

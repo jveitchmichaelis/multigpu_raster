@@ -9,7 +9,7 @@ from omegaconf import DictConfig, OmegaConf
 from torch.utils.data import DataLoader
 
 from .dataset import DummyImageDataset, TiledGeoTIFFDataset
-from .model import ObjectDetector
+from .model import FasterRCNN
 from .util import generate_test_image
 
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +55,7 @@ def main(cfg: DictConfig):
     logging.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
 
     # Model and trainer setup
-    model = ObjectDetector()
+    model = FasterRCNN()
 
     trainer = pl.Trainer(
         devices=cfg.gpus if cfg.accelerator not in ["cpu", "mps"] else 1,
