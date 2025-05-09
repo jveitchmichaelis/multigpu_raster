@@ -2,6 +2,7 @@ import lightning.pytorch as pl
 import numpy as np
 import torch
 import torchvision.models as models
+from torch.distributed import all_gather, get_rank, get_world_size
 
 
 class LoggingModule(pl.LightningModule):
@@ -22,13 +23,7 @@ class LoggingModule(pl.LightningModule):
             max_memory_allocated = torch.cuda.max_memory_allocated(device)
 
             # Ensure GPU stats are initialized for each device
-            if device not in self.gpu_stats:
-                self.gpu_stats[device] = {
-                    "max_memory": 0,
-                    "total_memory": 0,
-                    "iterations": 0,
-                }
-
+            for device in self.gpu_stats:
                 self.gpu_stats[device]["max_memory"] = max(
                     self.gpu_stats[device]["max_memory"], max_memory_allocated
                 )
@@ -38,27 +33,36 @@ class LoggingModule(pl.LightningModule):
         return super().on_predict_batch_end(outputs, batch, batch_idx, dataloader_idx)
 
     def on_predict_end(self):
-
         if torch.cuda.is_available():
-            device = torch.cuda.current_device()
-            stats = self.gpu_stats[device]
+            # Gather stats from all processes
+            world_size = get_world_size()
+            rank = get_rank()
 
-            avg_memory = stats["total_memory"] / stats["iterations"]
-            total_memory = torch.cuda.get_device_properties(device).total_memory
+            # Collect stats from all ranks
+            gathered_stats = [None] * world_size
+            stats = self.gpu_stats[torch.cuda.current_device()]
 
-            avg_memory_gb = avg_memory / (1024**3)
-            max_memory_gb = stats["max_memory"] / (1024**3)
+            # Gather all GPU stats from each process
+            all_gather(gathered_stats, stats)
 
-            avg_memory_percent = (avg_memory / total_memory) * 100
-            max_memory_percent = (stats["max_memory"] / total_memory) * 100
+            if rank == 0:  # Print only from rank 0 to avoid duplicate logs
+                for i, stat in enumerate(gathered_stats):
+                    avg_memory = stat["total_memory"] / stat["iterations"]
+                    total_memory = torch.cuda.get_device_properties(i).total_memory
 
-            print(f"GPU {device} / {len(torch.cuda.device_count())}:")
-            print(
-                f"  Average Memory Usage per Batch: {avg_memory_gb:.2f} GB ({avg_memory_percent:.2f}%)"
-            )
-            print(
-                f"  Peak Memory Usage: {max_memory_gb:.2f} GB ({max_memory_percent:.2f}%)"
-            )
+                    avg_memory_gb = avg_memory / (1024**3)
+                    max_memory_gb = stat["max_memory"] / (1024**3)
+
+                    avg_memory_percent = (avg_memory / total_memory) * 100
+                    max_memory_percent = (stat["max_memory"] / total_memory) * 100
+
+                    print(f"GPU {i}:")
+                    print(
+                        f"  Average Memory Usage per Batch: {avg_memory_gb:.2f} GB ({avg_memory_percent:.2f}%)"
+                    )
+                    print(
+                        f"  Peak Memory Usage: {max_memory_gb:.2f} GB ({max_memory_percent:.2f}%)"
+                    )
 
 
 # PyTorch Lightning model
